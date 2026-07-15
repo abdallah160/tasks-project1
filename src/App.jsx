@@ -1,10 +1,12 @@
 import './App.css'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faPen, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { useRef, useState } from 'react';
+import BottomItems from './components/bottomItems';
 function App() {
   const [items, setItems] = useState([]);
-
+  const [edit, setEdit] = useState(-1);
+  const [titleChange, setTitleChange] = useState();
   let inputRef = useRef();
 
   function toggleCheck(keyToUpdate) {
@@ -41,6 +43,30 @@ function App() {
     setItems((prev) => prev.filter(item => item.id != recievedID));
   }
 
+  function handleTaskEdit(recievedID) {
+    let neededTitle;
+    for (let item of items) {
+      if (item.id == recievedID) {
+        neededTitle = item.title;
+      }
+    }
+    setTitleChange(neededTitle);
+    setEdit(recievedID);
+
+  }
+  function handleTitleChange(recievedID) {
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id == recievedID) {
+          return { ...item, title: titleChange }
+
+        }
+        return item;
+      })
+    )
+    setEdit(-1);
+  }
+
 
   return (
     <div id="outer">
@@ -58,9 +84,13 @@ function App() {
                   <hr />
                   <div className='list-item'>
                     <input type="checkbox" checked={item.isChecked} onChange={() => toggleCheck(item.id)} />
-                    {!item.isChecked ? <p id="item-title">{item.title}</p> : <del id="item-title">{item.title}</del>}
+                    {item.id == edit ? (
+                      <div id="edit-area">
+                        <input type='text' id="edit-input" value={titleChange} onChange={(e) => setTitleChange(e.target.value)} />
+                      </div>
+                    ) : (!item.isChecked ? <p id="item-title">{item.title}</p> : <del id="item-title">{item.title}</del>)}
                     <div id='buttons'>
-                      <button /*TODO: onClick={() => handleTaskEdit(item.id)}*/><FontAwesomeIcon icon={faPen} /></button>
+                      {item.id == edit ? <button onClick={() => handleTitleChange(item.id)}><FontAwesomeIcon icon={faCheck} /></button> : <button onClick={() => handleTaskEdit(item.id)}><FontAwesomeIcon icon={faPen} /></button>}
                       <button onClick={() => handleTaskDeletion(item.id)}><FontAwesomeIcon icon={faTrash} /></button>
                     </div>
                   </div>
@@ -69,14 +99,9 @@ function App() {
             })
           }
         </div>
-        <div id="bottom-items">
-          <div id="progress">
-            <div id="progress-bar" style={{ "width": `${numOfCheckedItems / /*maybe 0*/ items.length * 100}%` }}></div>
-            <p id="inner-text" >{numOfCheckedItems} out of {items.length}</p>
-          </div>
-          <button onClick={handleRemoveChecked}>Remove Checked</button>
+        <BottomItems numOfCheckedItems={numOfCheckedItems} length={items.length} removeFun={handleRemoveChecked} />
 
-        </div>
+
       </div>
     </div>
 

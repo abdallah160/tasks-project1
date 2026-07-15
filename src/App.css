@@ -102,6 +102,29 @@ body {
   font-weight: bold;
 }
 
+#edit-input {
+  width: 500px;
+  text-align: left;
+  font-size: large;
+  margin-left: 20px;
+  height: 30px;
+  margin-top: 0;
+}
+
+#edit-area {
+  display: flex;
+  margin-right: 0;
+}
+
+#edit-button {
+  background-color: #6495ed;
+  border: solid #6495ed;
+  color: aliceblue;
+  border-radius: 2px;
+  font-weight: bold;
+
+
+}
 
 #insertion-button:hover,
 #bottom-items button:hover {
